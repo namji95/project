@@ -1,7 +1,7 @@
 package com.namji.todolist.controller;
 
-import com.namji.todolist.dto.Request;
-import com.namji.todolist.dto.Response;
+import com.namji.todolist.dto.request.TodoRequest;
+import com.namji.todolist.dto.response.TodoResponse;
 import com.namji.todolist.service.TodoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,9 +17,9 @@ public class TodoController {
   private final TodoService todoService;
 
   @PostMapping("/create")
-  public Response todoCreate (@RequestBody Request request) {
-    Response response = todoService.todoCreate(request);
+  public TodoResponse todoCreate (@RequestBody TodoRequest todoRequest) {
+    TodoResponse todoResponse = todoService.todoCreate(todoRequest);
 
-    return response;
+    return todoResponse;
   }
 }
