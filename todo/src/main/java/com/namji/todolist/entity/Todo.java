@@ -14,7 +14,7 @@ public class Todo {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private long id;
+  private long todoId;
 
   @Column(nullable = false)
   private String title;
@@ -22,7 +22,12 @@ public class Todo {
   @Column(nullable = false)
   private String content;
 
-  public Todo(String title, String content) {
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "user_id")
+  private User user;
+
+  public Todo(User user, String title, String content) {
+    this.user = user;
     this.title = title;
     this.content = content;
   }

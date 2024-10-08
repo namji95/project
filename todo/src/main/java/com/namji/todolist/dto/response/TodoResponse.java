@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class TodoResponse {
+  private Long id;
   private String title;
   private String content;
 }
