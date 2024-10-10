@@ -1,5 +1,6 @@
 package com.namji.todolist.entity;
 
+import com.namji.todolist.dto.request.TodoRequest;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -30,5 +31,10 @@ public class Todo {
     this.user = user;
     this.title = title;
     this.content = content;
+  }
+
+  public void update(TodoRequest request) {
+    this.title = request.getTitle();
+    this.content = request.getContent();
   }
 }
