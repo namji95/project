@@ -3,6 +3,8 @@ package com.namji.todolist.service;
 import com.namji.todolist.dto.request.TodoRequest;
 import com.namji.todolist.dto.response.TodoResponse;
 import com.namji.todolist.entity.Todo;
+import com.namji.todolist.exception.CustomException;
+import com.namji.todolist.exception.ErrorCode;
 import com.namji.todolist.repository.TodoRepository;
 import com.namji.todolist.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +27,7 @@ public class TodoService {
     Optional<Todo> findTodo = todoRepository.findByTitle(todoRequest.getTitle());
 
     if (findTodo.isPresent()) {
-      throw new IllegalArgumentException("이미 존재하는 일정입니다.");
+      throw new CustomException(ErrorCode.DUPLICATE_TODO);
     }
 
     Todo todo = new Todo(
@@ -43,16 +45,12 @@ public class TodoService {
 
   @Transactional(readOnly = true)
   public TodoResponse getTodo(Long id) {
-    Optional<Todo> findTodo = todoRepository.findById(id);
-
-    if (findTodo.isEmpty()) {
-      throw new IllegalArgumentException("존재하지 않는 게시글입니다.");
-    }
+    Todo findTodo = findTodo(id);
 
     return new TodoResponse(
-        findTodo.get().getTodoId(),
-        findTodo.get().getTitle(),
-        findTodo.get().getContent());
+        findTodo.getTodoId(),
+        findTodo.getTitle(),
+        findTodo.getContent());
   }
 
   @Transactional(readOnly = true)
@@ -61,7 +59,7 @@ public class TodoService {
     List<TodoResponse> responses = new ArrayList<>();
 
     if (findAllTodo.isEmpty()) {
-      throw new IllegalArgumentException("일정이 존재하지 않습니다.");
+      throw new CustomException(ErrorCode.NOT_FOUND_TODO);
     }
 
     for (Todo todo : findAllTodo) {
@@ -79,17 +77,15 @@ public class TodoService {
 
   @Transactional
   public TodoResponse updateTodo(UserDetailsImpl userDetails, TodoRequest todoRequest, Long id) {
-    Todo updateTodo = todoRepository.findById(id).orElseThrow(
-        () -> new IllegalArgumentException("존재하지 않는 게시글입니다."));
+    Todo updateTodo = findTodo(id);
 
     if (!Objects.equals(userDetails.getUser().getUserId(), updateTodo.getUser().getUserId())) {
-      throw new IllegalArgumentException("해당 게시글 작성자만 수정할 수 있습니다.");
+      throw new CustomException(ErrorCode.USER_CHECK);
     }
 
     updateTodo.update(todoRequest);
 
-    Todo findTodo = todoRepository.findById(id).orElseThrow(
-        () -> new IllegalArgumentException("존재하지 않는 게시글입니다."));
+    Todo findTodo = findTodo(id);
 
     return new TodoResponse(
         findTodo.getTodoId(),
@@ -99,15 +95,19 @@ public class TodoService {
 
   @Transactional
   public String deleteTodo(UserDetailsImpl userDetails, Long id) {
-    Todo findTodo = todoRepository.findById(id).orElseThrow(
-        () -> new IllegalArgumentException("해당 게시글이 존재하지 않습니다."));
+    Todo findTodo = findTodo(id);
 
     if (!Objects.equals(userDetails.getUser().getUserId(), findTodo.getUser().getUserId())) {
-      throw new IllegalArgumentException("해당 게시글 작성자만 삭제할 수 있습니다.");
+      throw new CustomException(ErrorCode.USER_CHECK);
     }
 
     todoRepository.deleteById(id);
 
     return "게시글이 삭제되었습니다.";
+  }
+
+  private Todo findTodo(Long id) {
+    return todoRepository.findById(id).orElseThrow(
+        () -> new CustomException(ErrorCode.NOT_FOUND_TODO));
   }
 }
