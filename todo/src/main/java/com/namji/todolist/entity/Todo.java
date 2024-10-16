@@ -6,12 +6,14 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Getter
 @Table
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-public class Todo {
+public class Todo extends Timestamped {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,14 +25,22 @@ public class Todo {
   @Column(nullable = false)
   private String content;
 
+  @Column(nullable = false)
+  private String password;
+
+  @Column(nullable = false)
+  private LocalDateTime writeDate;
+
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "user_id")
   private User user;
 
-  public Todo(User user, String title, String content) {
+  public Todo(User user, String title, String content, String password) {
     this.user = user;
     this.title = title;
     this.content = content;
+    this.password = password;
+    this.writeDate = LocalDateTime.now();
   }
 
   public void update(TodoRequest request) {

@@ -33,14 +33,16 @@ public class TodoService {
     Todo todo = new Todo(
         userDetails.getUser(),
         todoRequest.getTitle(),
-        todoRequest.getContent());
+        todoRequest.getContent(),
+        todoRequest.getPassword());
 
     todoRepository.save(todo);
 
     return new TodoResponse(
         todo.getUser().getUserId(),
         todo.getTitle(),
-        todo.getContent());
+        todo.getContent(),
+        todo.getWriteDate());
   }
 
   @Transactional(readOnly = true)
@@ -50,7 +52,8 @@ public class TodoService {
     return new TodoResponse(
         findTodo.getTodoId(),
         findTodo.getTitle(),
-        findTodo.getContent());
+        findTodo.getContent(),
+        findTodo.getWriteDate());
   }
 
   @Transactional(readOnly = true)
@@ -67,9 +70,8 @@ public class TodoService {
           new TodoResponse(
               todo.getTodoId(),
               todo.getTitle(),
-              todo.getContent()
-          )
-      );
+              todo.getContent(),
+              todo.getWriteDate()));
     }
 
     return responses;
@@ -90,7 +92,8 @@ public class TodoService {
     return new TodoResponse(
         findTodo.getTodoId(),
         findTodo.getTitle(),
-        findTodo.getContent());
+        findTodo.getContent(),
+        findTodo.getWriteDate());
   }
 
   @Transactional
