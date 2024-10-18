@@ -9,6 +9,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @Getter
 @MappedSuperclass
@@ -17,11 +18,11 @@ public abstract class Timestamped {
 
   @CreatedDate
   @Column(updatable = false, nullable = false)
-  private LocalDateTime createdAt;
+  private String createdAt = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 
   @LastModifiedDate
   @Column(nullable = false)
-  private LocalDateTime updatedAt;
+  private String updatedAt = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 
   @Column
   private LocalDateTime deletedAt;

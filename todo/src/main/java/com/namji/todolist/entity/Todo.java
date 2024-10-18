@@ -29,18 +29,18 @@ public class Todo extends Timestamped {
   private String password;
 
   @Column(nullable = false)
-  private LocalDateTime writeDate;
+  private String writeDate;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "user_id")
   private User user;
 
-  public Todo(User user, String title, String content, String password) {
+  public Todo(User user, String title, String content, String password, String now) {
     this.user = user;
     this.title = title;
     this.content = content;
     this.password = password;
-    this.writeDate = LocalDateTime.now();
+    this.writeDate = now;
   }
 
   public void update(TodoRequest request) {

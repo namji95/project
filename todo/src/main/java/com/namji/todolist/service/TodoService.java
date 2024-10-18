@@ -8,9 +8,13 @@ import com.namji.todolist.exception.ErrorCode;
 import com.namji.todolist.repository.TodoRepository;
 import com.namji.todolist.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -21,20 +25,18 @@ import java.util.Optional;
 public class TodoService {
 
   private final TodoRepository todoRepository;
+  private final PasswordEncoder passwordEncoder;
 
   @Transactional
   public TodoResponse createTodo(UserDetailsImpl userDetails, TodoRequest todoRequest) {
-    Optional<Todo> findTodo = todoRepository.findByTitle(todoRequest.getTitle());
-
-    if (findTodo.isPresent()) {
-      throw new CustomException(ErrorCode.DUPLICATE_TODO);
-    }
-
+    String formatDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일"));
+    String password = passwordEncoder.encode(todoRequest.getPassword());
     Todo todo = new Todo(
         userDetails.getUser(),
         todoRequest.getTitle(),
         todoRequest.getContent(),
-        todoRequest.getPassword());
+        password,
+        formatDate);
 
     todoRepository.save(todo);
 
