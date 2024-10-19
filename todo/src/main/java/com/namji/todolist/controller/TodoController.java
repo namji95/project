@@ -30,6 +30,11 @@ public class TodoController {
     return todoService.getTodo(id);
   }
 
+  @GetMapping("/get/mytodo")
+  public List<TodoResponse> getAllMyTodo(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+    return todoService.getAllMyTodo(userDetails);
+  }
+
   @GetMapping("/get-all")
   public List<TodoResponse> getAllTodo() {
     return todoService.getAllTodo();

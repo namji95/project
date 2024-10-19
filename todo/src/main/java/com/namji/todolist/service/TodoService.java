@@ -59,6 +59,27 @@ public class TodoService {
   }
 
   @Transactional(readOnly = true)
+  public List<TodoResponse> getAllMyTodo(UserDetailsImpl userDetails) {
+    List<TodoResponse> responses = new ArrayList<>();
+    List<Todo> findAllTodo = todoRepository.findAllByUser(userDetails.getUser());
+
+    if (findAllTodo.isEmpty()) {
+      throw new CustomException(ErrorCode.NOT_FOUND_TODO);
+    }
+
+    for (Todo todo : findAllTodo) {
+      responses.add(
+          new TodoResponse(
+              todo.getTodoId(),
+              todo.getTitle(),
+              todo.getContent(),
+              todo.getWriteDate()));
+    }
+
+    return responses;
+  }
+
+  @Transactional(readOnly = true)
   public List<TodoResponse> getAllTodo() {
     List<Todo> findAllTodo = todoRepository.findAllByOrderByWriteDateDesc();
     List<TodoResponse> responses = new ArrayList<>();
