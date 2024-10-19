@@ -60,7 +60,7 @@ public class TodoService {
 
   @Transactional(readOnly = true)
   public List<TodoResponse> getAllTodo() {
-    List<Todo> findAllTodo = todoRepository.findAll();
+    List<Todo> findAllTodo = todoRepository.findAllByOrderByWriteDateDesc();
     List<TodoResponse> responses = new ArrayList<>();
 
     if (findAllTodo.isEmpty()) {
