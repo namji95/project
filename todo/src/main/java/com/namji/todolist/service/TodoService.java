@@ -12,13 +12,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -107,6 +105,9 @@ public class TodoService {
     if (!Objects.equals(userDetails.getUser().getUserId(), updateTodo.getUser().getUserId())) {
       throw new CustomException(ErrorCode.USER_CHECK);
     }
+    if (!passwordEncoder.matches(todoRequest.getPassword(), updateTodo.getPassword())) {
+      throw new CustomException(ErrorCode.PASSWORD_NOT_MATCH);
+    }
 
     updateTodo.update(todoRequest);
 
@@ -120,11 +121,14 @@ public class TodoService {
   }
 
   @Transactional
-  public String deleteTodo(UserDetailsImpl userDetails, Long id) {
-    Todo findTodo = findTodo(id);
+  public String deleteTodo(UserDetailsImpl userDetails, TodoRequest todoRequest, Long id) {
+    Todo deleteTodo = findTodo(id);
 
-    if (!Objects.equals(userDetails.getUser().getUserId(), findTodo.getUser().getUserId())) {
+    if (!Objects.equals(userDetails.getUser().getUserId(), deleteTodo.getUser().getUserId())) {
       throw new CustomException(ErrorCode.USER_CHECK);
+    }
+    if (!passwordEncoder.matches(todoRequest.getPassword(), deleteTodo.getPassword())) {
+      throw new CustomException(ErrorCode.PASSWORD_NOT_MATCH);
     }
 
     todoRepository.deleteById(id);

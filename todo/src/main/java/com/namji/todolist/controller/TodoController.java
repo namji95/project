@@ -51,8 +51,9 @@ public class TodoController {
   @DeleteMapping("/delete/{id}")
   public String deleteTodo(
       @AuthenticationPrincipal UserDetailsImpl userDetails,
+      @RequestBody TodoRequest todoRequest,
       @PathVariable Long id
   ) {
-    return todoService.deleteTodo(userDetails, id);
+    return todoService.deleteTodo(userDetails, todoRequest, id);
   }
 }
