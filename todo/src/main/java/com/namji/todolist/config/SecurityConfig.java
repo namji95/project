@@ -53,6 +53,7 @@ public class SecurityConfig {
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
     // CSRF 설정
     http.csrf((csrf) -> csrf.disable());
+    http.cors();
 
     // 기본 설정인 Session 방식은 사용하지 않고 JWT 방식을 사용하기 위한 설정
     http.sessionManagement((sessionManagement) ->
@@ -61,9 +62,10 @@ public class SecurityConfig {
 
     http.authorizeHttpRequests((authorizeHttpRequests) ->
         authorizeHttpRequests
-            .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll() // resources 접근 허용 설정
-//            .requestMatchers("/").permitAll() // 메인 페이지 요청 허가
-            .requestMatchers("/v1/user/**").permitAll() // '/api/user/'로 시작하는 요청 모두 접근 허가
+            .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll() // Spring Boot 기본 정적 리소스 허용
+            .requestMatchers("/style.css").permitAll() // 정적 리소스에 대한 접근 허용
+            .requestMatchers("/").permitAll() // 메인 페이지 요청 허가
+            .requestMatchers("/v1/user/**").permitAll() // '/v1/user/'로 시작하는 요청 모두 접근 허가
             .anyRequest().authenticated() // 그 외 모든 요청 인증처리
     );
 
